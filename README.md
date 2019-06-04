@@ -1,2 +1,2 @@
-# python-graphs-operations
-Multi-parallel form of the graph. Kernel graph search.
+# Graphs operations
+Calculating the multi-parallel form of the graph and kernel of the graph.
