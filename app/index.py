@@ -194,7 +194,7 @@ def truth_table(func: Callable) -> pandas.DataFrame:
         columns=(list(func.__code__.co_varnames) + [expression]))
 
 
-def find_clique_graphs(source_matrix) -> List:
+def find_clique_graphs(source_matrix, source_vertices) -> List:
     """
     Finds clique graphs
     :return:
@@ -228,7 +228,7 @@ def find_clique_graphs(source_matrix) -> List:
 
     vertices_sets = []
     for term in mdnf_list:
-        vertices_sets.append(sorted(set(expr_variables) - set(list(term.lower()))))
+        vertices_sets.append(sorted(set(source_vertices) - set(list(term.lower()))))
 
     #return mdnf_list
     return vertices_sets
@@ -314,6 +314,18 @@ try:
     }
     """
 
+    """
+    # Clique example 2
+    vertices = tuple(string.ascii_lowercase)[:7]
+    adjacency_matrix = {
+        'a': {'c': True, 'd': True, 'g': True},
+        'b': {'c': True, 'd': True, 'g': True},
+        'c': {'d': True, 'f': True, 'g': True},
+        'd': {'e': True, 'f': True, 'g': True},
+        'f': {'g': True},
+    }
+    """
+
     floors = get_floors(adjacency_matrix.copy(), vertices)
 
     #print('adjacency_matrix: ')
@@ -381,7 +393,7 @@ try:
     if not complement_adjacency_matrix:
         print('The complement adjacency matrix is empty. Cannot build complement graph.')
     else:
-        clique_graphs = find_clique_graphs(complement_adjacency_matrix)
+        clique_graphs = find_clique_graphs(complement_adjacency_matrix, vertices)
         print('\r\nClique graph: ')
         for num, vertices_set in enumerate(clique_graphs, start=1):
             print('{number}. {{{vertices}}}'.format(number=num, vertices=', '.join(vertices_set)))
