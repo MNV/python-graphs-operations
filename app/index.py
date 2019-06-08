@@ -194,12 +194,12 @@ def truth_table(func: Callable) -> pandas.DataFrame:
         columns=(list(func.__code__.co_varnames) + [expression]))
 
 
-def find_clique_graphs() -> List:
+def find_clique_graphs(source_matrix) -> List:
     """
     Finds clique graphs
     :return:
     """
-    cnf_expression = get_cnf_by_adjacency_matrix(complement_adjacency_matrix)
+    cnf_expression = get_cnf_by_adjacency_matrix(source_matrix)
     #print('cnf_expression: ')
     #print(cnf_expression)
 
@@ -212,10 +212,10 @@ def find_clique_graphs() -> List:
 
     exec(f"""def expression_function({','.join(expr_variables)}): return eval(expression)""", globals())
 
-    data = truth_table(expression_function)
+    truth_table_data = truth_table(expression_function)
     #print(data)
 
-    mdnf_string, mdnf_list = get_mdnf(data, expression, expr_variables)
+    mdnf_string, mdnf_list = get_mdnf(truth_table_data, expression, expr_variables)
 
     print('\r\nMDNF: ' + mdnf_string)
     #
@@ -226,7 +226,12 @@ def find_clique_graphs() -> List:
     #max_length = len(max(mdnf_list, key=len))
     #max_graph = [item for item in mdnf_list if len(item) == max_length]
 
-    return mdnf_list
+    vertices_sets = []
+    for term in mdnf_list:
+        vertices_sets.append(sorted(set(expr_variables) - set(list(term.lower()))))
+
+    #return mdnf_list
+    return vertices_sets
 
 
 try:
@@ -376,7 +381,7 @@ try:
     if not complement_adjacency_matrix:
         print('The complement adjacency matrix is empty. Cannot build complement graph.')
     else:
-        clique_graphs = find_clique_graphs()
+        clique_graphs = find_clique_graphs(complement_adjacency_matrix)
         print('\r\nClique graph: ')
         for num, vertices_set in enumerate(clique_graphs, start=1):
             print('{number}. {{{vertices}}}'.format(number=num, vertices=', '.join(vertices_set)))
