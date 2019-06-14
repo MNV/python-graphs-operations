@@ -1,7 +1,11 @@
+import re
 import itertools
 from typing import List, Dict, Tuple
 
 import pandas
+
+
+ALLOWED_LEXIS = ('(', ')', '0', '1', 'implies', 'nand', 'nor', 'and', 'not', 'xor', 'or', '==')
 
 
 def get_mdnf(data_frame: pandas.DataFrame, function_name: str, variables: List[str]) -> Tuple[str, List[str]]:
@@ -117,7 +121,7 @@ def find_optimal_coverage(implicants_dict: Dict) -> Dict:
             vars.append(implicants_dict[index_comb])
             if indices_set == set(indices):
                 gr.append(vars)
-                break
+                return min(gr, key=len)
         indices_set = set()
         vars = []
 
@@ -140,3 +144,17 @@ def flatten(list_to_flatten):
                 yield x
         else:
             yield elem
+
+
+def extract_variables(expression: str) -> List[str]:
+    """Extracts the variables from given expression"""
+    expr_variables = expression
+    lexis = tuple(ALLOWED_LEXIS)
+    for sign in lexis:
+        expr_variables = expr_variables.replace(sign, '')
+
+    expr_variables = re.split(r'\s*,?', expr_variables)
+    expr_variables = list(filter(None, expr_variables))
+    expr_variables = sorted(tuple(set(expr_variables)))
+
+    return expr_variables
